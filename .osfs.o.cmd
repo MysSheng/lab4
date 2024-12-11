@@ -1,0 +1,1 @@
+savedcmd_/home/ubuntu/Desktop/os_2024_lab4_template/osfs.o := ld -m elf_x86_64 -z noexecstack --no-warn-rwx-segments   -r -o /home/ubuntu/Desktop/os_2024_lab4_template/osfs.o @/home/ubuntu/Desktop/os_2024_lab4_template/osfs.mod 

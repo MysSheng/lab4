@@ -1,0 +1,1 @@
+savedcmd_/home/ubuntu/Desktop/os_2024_lab4_template/Module.symvers :=  scripts/mod/modpost -M -m -a      -o /home/ubuntu/Desktop/os_2024_lab4_template/Module.symvers -T /home/ubuntu/Desktop/os_2024_lab4_template/modules.order -i Module.symvers -e 
