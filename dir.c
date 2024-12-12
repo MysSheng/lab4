@@ -266,13 +266,15 @@ static int osfs_create(struct mnt_idmap *idmap, struct inode *dir, struct dentry
     int ret;
 
     // Step2: Validate the file name length
+    // 最大長度在osfs.h中定義
     if (dentry->d_name.len > MAX_FILENAME_LEN) {
     	pr_err("osfs_create: File name '%.*s' is too long\n", 
            (int)dentry->d_name.len, dentry->d_name.name);
     	return -ENAMETOOLONG;
-}
+    }
 
     // Step3: Allocate and initialize VFS & osfs inode
+    // 先在當前dir下create一個inode
     inode = osfs_new_inode(dir, mode);
     if (IS_ERR(inode)) {
         pr_err("osfs_create: Failed to allocate new inode\n");
@@ -291,6 +293,7 @@ static int osfs_create(struct mnt_idmap *idmap, struct inode *dir, struct dentry
     osfs_inode->i_blocks = 0;
 
     // Step4: Parent directory entry update for the new file
+    // 因為當前dir新增了一個節點，所以他要新增這個節點的進入口
     ret = osfs_add_dir_entry(dir, inode->i_ino, dentry->d_name.name, dentry->d_name.len);
     if (ret) {
         pr_err("osfs_create: Failed to add directory entry\n");
@@ -298,12 +301,15 @@ static int osfs_create(struct mnt_idmap *idmap, struct inode *dir, struct dentry
         return ret;
     }
 
-    // Step 5: Update the parent directory's metadata 
+    // Step 5: Update the parent directory's metadata
+    // 根據osfs_inode的定義修改新增一個inode後改變的properties
     parent_inode->i_size += sizeof(struct osfs_dir_entry);
+    // 標記inode為已修改
     mark_inode_dirty(dir);
 
     
     // Step 6: Bind the inode to the VFS dentry
+    // 把inode綁定到dentry上
     d_instantiate(dentry, inode);
     pr_info("osfs_create: File '%.*s' created with inode %lu\n",
             (int)dentry->d_name.len, dentry->d_name.name, inode->i_ino);
